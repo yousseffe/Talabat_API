@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Talabat.Core.Specification;
+using Talabat.Repository.Specification;
 
 namespace Talabat.Repository.Repositories
 {
@@ -18,22 +20,14 @@ namespace Talabat.Repository.Repositories
         {
 			_dbcontext = dbcontext;
 		}
-        public async Task<IEnumerable<T>> GetAllAsync()
+		public async Task<IEnumerable<T>> GetAllAsync(ISpecification<T> specification)
 		{
-			if(typeof(T) == typeof(Product))
-			{
-				return (IEnumerable<T>) await _dbcontext.Products.Include(P => P.Category).Include(P => P.Brand).AsNoTracking().ToListAsync();
-			}
-			return await _dbcontext.Set<T>().AsNoTracking().ToListAsync();
+			return await SpecofocationEvaluator<T>.GetQuery(_dbcontext.Set<T>(), specification).ToListAsync();
 		}
 
-		public async Task<T?> GetAsync(int id)
+		public async Task<T?> GetByIdAsync(int id, ISpecification<T> specification)
 		{
-			if(typeof(T) == typeof(Product))
-			{
-				return await _dbcontext.Products.Where(P => P.Id == id).Include(P => P.Category).Include(P => P.Brand).FirstOrDefaultAsync() as T;
-			}
-			return await _dbcontext.Set<T>().FindAsync(id);
+			return await SpecofocationEvaluator<T>.GetQuery(_dbcontext.Set<T>(), specification).FirstOrDefaultAsync();
 		}
 	}
 }
