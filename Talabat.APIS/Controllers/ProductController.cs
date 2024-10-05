@@ -22,9 +22,9 @@ namespace Talabat.APIS.Controllers
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Product>> GetProductById(int id)
+		public async Task<ActionResult<ProductDTO>> GetProductById(int id)
 		{
-			var product = await _repository.GetByIdAsync(id, new ProductSpecification());
+			var product = await _repository.GetByIdAsync(id, new ProductSpecification(P=>P.Id == id));
 			if (product == null)
 			{
 				return NotFound();
@@ -34,7 +34,7 @@ namespace Talabat.APIS.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+		public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
 		{
 			var products = await _repository.GetAllAsync(new ProductSpecification());
 			var MappedProducts = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDTO>>(products);
